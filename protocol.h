@@ -14,7 +14,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* aint with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 
@@ -23,20 +23,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+    
 //// control structures used in firmware
 #pragma pack(push, 4)  // all used data types are 4 byte
 typedef struct tag_PROTOCOL_POSN_DATA {
     // these get set
-    long wanted_posn_mm[2];
+    int wanted_posn_mm[2];
 
     // configurations/constants
     int posn_max_speed; // max speed in this mode
     int posn_min_speed; // minimum speed (to get wheels moving)
 
     // just so it can be read back
-    long posn_diff_mm[2];
-    long posn_speed_demand[2];
+    int posn_diff_mm[2];
+    int posn_speed_demand[2];
 } PROTOCOL_POSN_DATA;
 #pragma pack(pop)
 
@@ -44,7 +44,7 @@ typedef struct tag_PROTOCOL_POSN_DATA {
 #pragma pack(push, 4)  // all used data types are 4 byte
 typedef struct tag_PROTOCOL_SPEED_DATA {
     // these get set
-    long wanted_speed_mm_per_sec[2];
+    int wanted_speed_mm_per_sec[2];
 
     // configurations/constants
     int speed_max_power; // max speed in this mode
@@ -52,8 +52,8 @@ typedef struct tag_PROTOCOL_SPEED_DATA {
     int speed_minimum_speed; // below this, we don't ask it to do anything
 
     // just so it can be read back
-    long speed_diff_mm_per_sec[2];
-    long speed_power_demand[2];
+    int speed_diff_mm_per_sec[2];
+    int speed_power_demand[2];
 } PROTOCOL_SPEED_DATA;
 #pragma pack(pop)
 
@@ -61,7 +61,7 @@ typedef struct tag_PROTOCOL_SPEED_DATA {
 #pragma pack(push, 4)  // all used data types are 4 byte
 typedef struct tag_PROTOCOL_PWM_DATA {
     // these get set
-    long pwm[2];
+    int pwm[2];
 
     // configurations/constants
     int speed_max_power; // max speed in this mode
@@ -72,20 +72,20 @@ typedef struct tag_PROTOCOL_PWM_DATA {
 
 
 
-#pragma pack(push, 4)  // long and float are 4 byte each
+#pragma pack(push, 4)  // int and float are 4 byte each
 typedef struct tag_PROTOCOL_HALL_DATA_STRUCT{
-    long HallPosn; // 90 per revolution
-    long HallSpeed; // speed part calibrated to speed demand value
+    int HallPosn; // 90 per revolution
+    int HallSpeed; // speed part calibrated to speed demand value
 
     float HallPosnMultiplier; // m per hall segment
 
-    long HallPosn_lastread; // posn offset set via protocol in raw value
-    long HallPosn_mm; // posn in mm
-    long HallPosn_mm_lastread; // posn offset set via protocol in mm
-    long HallSpeed_mm_per_s; // speed in m/s
+    int HallPosn_lastread; // posn offset set via protocol in raw value
+    int HallPosn_mm; // posn in mm
+    int HallPosn_mm_lastread; // posn offset set via protocol in mm
+    int HallSpeed_mm_per_s; // speed in m/s
 
-    unsigned long HallTimeDiff;
-    unsigned long HallSkipped;
+    unsigned int HallTimeDiff;
+    unsigned int HallSkipped;
 } PROTOCOL_HALL_DATA_STRUCT;
 #pragma pack(pop)
 
@@ -140,11 +140,11 @@ typedef struct tag_PROTOCOL_sensor_frame{
 } PROTOCOL_SENSOR_FRAME;
 #pragma pack(pop)
 
-#pragma pack(push, 4)  // since on 'long' are used, alignment can be optimized for 4 bytes
+#pragma pack(push, 4)  // since on 'int' are used, alignment can be optimized for 4 bytes
 typedef struct PROTOCOL_INTEGER_XYT_POSN_tag {
-    long x;
-    long y;
-    long degrees;
+    int x;
+    int y;
+    int degrees;
 } PROTOCOL_INTEGER_XYT_POSN;
 #pragma pack(pop)
 
@@ -159,17 +159,17 @@ typedef struct {
 
 #pragma pack(push, 4)  // all used data types are 4 byte
 typedef struct tag_PROTOCOL_POSN {
-    long LeftAbsolute;
-    long RightAbsolute;
-    long LeftOffset;
-    long RightOffset;
+    int LeftAbsolute;
+    int RightAbsolute;
+    int LeftOffset;
+    int RightOffset;
 } PROTOCOL_POSN;
 #pragma pack(pop)
 
 #pragma pack(push, 4)  // all used data types are 4 byte
 typedef struct tag_PROTOCOL_POSN_INCR {
-    long Left;
-    long Right;
+    int Left;
+    int Right;
 } PROTOCOL_POSN_INCR;
 #pragma pack(pop)
 
@@ -189,7 +189,7 @@ typedef struct tag_PROTOCOL_SUBSCRIBEDATA {
     unsigned int period;             // how often should the information be sent?
     int count;                       // how many messages shall be sent? -1 for infinity
     char som;                        // which SOM shall be used? with or without ACK
-    unsigned long next_send_time;    // last time a message requiring an ACK was sent
+    unsigned int next_send_time;    // last time a message requiring an ACK was sent
 
 } PROTOCOL_SUBSCRIBEDATA;
 #pragma pack(pop)
@@ -227,9 +227,9 @@ typedef struct tag_MACHINE_PROTOCOL_TX_BUFFER {
 
 #pragma pack(push, 4) // all used data types are 4 byte
 typedef struct tag_PROTOCOLCOUNT {
-    unsigned long rx;              // Count of received messages (valid CS)
-    unsigned long rxMissing;       // If message IDs went missing..
-    unsigned long tx;              // Count of sent messages (ACK, NACK and retries do not count)
+    unsigned int rx;              // Count of received messages (valid CS)
+    unsigned int rxMissing;       // If message IDs went missing..
+    unsigned int tx;              // Count of sent messages (ACK, NACK and retries do not count)
     unsigned int  txRetries;       // how often were messages resend?
     unsigned int  txFailed;        // TX Messages which couldn't be deliveredr. No retries left.
 
@@ -246,7 +246,7 @@ typedef struct tag_PROTOCOLSTATE {
     char retries;                            // number of retries left to send message
     int lastTXCI;                            // CI of last sent message
     int lastRXCI;                            // CI of last received message in ACKed stream
-    unsigned long last_send_time;            // last time a message requiring an ACK was sent
+    unsigned int last_send_time;            // last time a message requiring an ACK was sent
 
     PROTOCOLCOUNT counters;                  // Statistical data of the protocol performance
     MACHINE_PROTOCOL_TX_BUFFER TxBuffer;     // Buffer for Messages to be sent
@@ -256,9 +256,9 @@ typedef struct tag_PROTOCOLSTATE {
 
 typedef struct tag_PROTOCOL_STAT {
     char allow_ascii;                     // If set to 0, ascii protocol is not used
-    unsigned long last_tick_time;         // last time the tick function was called
+    unsigned int last_tick_time;         // last time the tick function was called
     char state;                           // state used in protocol_byte to receive messages
-    unsigned long last_char_time;         // last time a character was received
+    unsigned int last_char_time;         // last time a character was received
     unsigned char CS;                     // temporary storage to calculate Checksum
     unsigned char count;                  // index pointing to last received byte
     PROTOCOL_MSG2 curr_msg;               // received message storage
@@ -266,7 +266,7 @@ typedef struct tag_PROTOCOL_STAT {
     char send_state;                      // message transmission state (ACK_TX_WAITING or IDLE)
 
     int timeout1;                         // ACK has to be received in this time
-    int timeout2;                         // when receiving a packet, longest time between characters
+    int timeout2;                         // when receiving a packet, intest time between characters
 
     int (*send_serial_data)( unsigned char *data, int len );       // Function Pointer to sending function
     int (*send_serial_data_wait)( unsigned char *data, int len );
